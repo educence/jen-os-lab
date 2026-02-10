@@ -1,0 +1,41 @@
+{
+  "monitoring": {
+    "name": "JEN_OS Lab Monitoring",
+    "version": "1.0",
+    "thresholds": {
+      "error_404": {
+        "count": 3,
+        "action": "retry",
+        "description": "Retry after 3 consecutive 404 errors"
+      },
+      "stall_timeout": {
+        "duration_minutes": 10,
+        "action": "escalate",
+        "description": "Escalate if task stalls for 10 minutes"
+      },
+      "response_time": {
+        "max_seconds": 30,
+        "action": "alert",
+        "description": "Alert if response time exceeds 30 seconds"
+      }
+    },
+    "alerts": {
+      "channels": ["log", "webhook"],
+      "webhook_url": "https://hooks.example.com/jen-os-alerts"
+    },
+    "metrics": {
+      "enabled": true,
+      "interval_seconds": 60,
+      "track": [
+        "task_duration",
+        "error_rate",
+        "concurrency_usage",
+        "api_calls"
+      ]
+    },
+    "security": {
+      "log_sensitive_data": false,
+      "audit_enabled": true
+    }
+  }
+}
