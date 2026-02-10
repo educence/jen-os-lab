@@ -1,0 +1,65 @@
+{
+  "name": "JEN_OS Lab Workflow",
+  "nodes": [
+    {
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "parameters": {
+        "path": "jen-os-trigger",
+        "responseMode": "onReceived"
+      }
+    },
+    {
+      "name": "List Repos",
+      "type": "n8n-nodes-base.code",
+      "position": [450, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{repos: ['educence/jen-os-lab', 'educence/PakePlus']}];"
+      }
+    },
+    {
+      "name": "Map to repogithub",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [650, 300],
+      "parameters": {
+        "batchSize": 5
+      }
+    },
+    {
+      "name": "Mock git ls-remote",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [850, 300],
+      "parameters": {
+        "url": "https://api.github.com/repos/{{$json.repo}}",
+        "authentication": "none",
+        "options": {}
+      }
+    },
+    {
+      "name": "Security Filter",
+      "type": "n8n-nodes-base.filter",
+      "position": [1050, 300],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.credentials}}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {"main": [[{"node": "List Repos", "type": "main", "index": 0}]]},
+    "List Repos": {"main": [[{"node": "Map to repogithub", "type": "main", "index": 0}]]},
+    "Map to repogithub": {"main": [[{"node": "Mock git ls-remote", "type": "main", "index": 0}]]},
+    "Mock git ls-remote": {"main": [[{"node": "Security Filter", "type": "main", "index": 0}]]}
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
