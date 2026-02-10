@@ -1,0 +1,29 @@
+# JEN_OS Lab Topology - Hybrid Multi-Agent System
+version: 1.0
+architecture: hybrid
+
+deployment:
+  model: "1 agent per repo-site"
+  
+workflow:
+  execution: parallel
+  tasks:
+    - clone
+    - lint
+    - test
+    - deploy
+
+agents:
+  - name: repogithub
+    type: GitHub
+    concurrency: 5
+    capabilities:
+      - clone
+      - lint
+      - test
+      - build
+      - audit
+      
+security:
+  credential_handling: none
+  audit_logs: enabled
